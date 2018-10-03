@@ -8,6 +8,38 @@ let express = require('express'),
     slug = require("slug"),
     db = mongoose.connection;
 
+
+// Populate Routes
+router.get("/populate/1", (req, res) => {
+    Category.find({}).populate({path: 'subcategory', model: 'subcategory'}).exec((err, categories) => {
+        return res.status(200).send(categories);
+    });
+});
+router.get("/populate/2", (req, res) => {
+    SubCategory.find({}).populate({path: 'product', model: 'product'}).exec((err, prodcut) => {
+        return res.status(200).send(prodcut);
+    });
+});
+
+/*
+ Issue: cant populate second level of data.
+ Heirarchy: Category -> SubCategory -> Product
+ -I am able to get Category and SubCategory together, and SubCategory and Product together
+ -Getting them together is, i am getting objects instead of _ids, i want this happen for levels.
+ -Through this API, i want all 3 together.
+ */
+router.get("/populate/3", (req, res) => {
+    Category.find({}).populate({
+        path: 'subcategory', model: 'subcategory',
+        populate:{
+            path:'product', model:Product
+        }
+    }).exec((err, categories) => {
+        return res.status(200).send(categories);
+    });
+});
+
+
 //Get Parent Category
 router.get("/get/categories", async (req, res) => {
     const categories = await Category.find({}).exec();
@@ -29,28 +61,6 @@ router.get("get/products/:category_id/:sub_category_id", async (req, res) => {
     res.send(category);
 });
 
-//
-router.get("/populate/1", (req, res) => {
-    Category.find({}).populate({path: 'subcategory', model: 'subcategory'}).exec((err, categories) => {
-        return res.status(200).send(categories);
-    });
-});
-router.get("/populate/2", (req, res) => {
-    SubCategory.find({}).populate({path: 'product', model: 'product'}).exec((err, prodcut) => {
-        return res.status(200).send(prodcut);
-    });
-});
-
-router.get("/populate/3", (req, res) => {
-    Category.find({}).populate({
-        path: 'subcategory', model: 'subcategory',
-        populate:{
-            path:'product', model:Product
-        }
-    }).exec((err, categories) => {
-        return res.status(200).send(categories);
-    });
-});
 
 
 // Add Parent Category
