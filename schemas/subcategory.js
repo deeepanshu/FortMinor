@@ -7,7 +7,11 @@ const subcategory = new mongoose.Schema({
     description: String,
     slug: String,
     url: String,
-    products: [mongoose.Schema.Types.ObjectId]
+    categoryID : mongoose.Schema.Types.ObjectId,
+    product: [mongoose.Schema.Types.ObjectId],
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId
+    }
 });
 
 mongoose.model("subcategory", subcategory);

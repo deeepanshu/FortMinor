@@ -7,7 +7,12 @@ const product = new mongoose.Schema({
     description: String,
     slug: String,
     url: String,
-    attributes: Array
+    categoryID : mongoose.Schema.Types.ObjectId,
+    subCategoryID : mongoose.Schema.Types.ObjectId,
+    attributes: Array,
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId
+    }
 });
 
 mongoose.model("product", product);

@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const keys = require("../config/keys");
 mongoose.Promise = require("bluebird");
 
 const category = new mongoose.Schema({
@@ -8,7 +7,10 @@ const category = new mongoose.Schema({
     description: String,
     slug: String,
     url: String,
-    subcategories: [mongoose.Schema.Types.ObjectId]
+    subcategory: [mongoose.Schema.Types.ObjectId],
+    createdBy: {
+        type: mongoose.Schema.Types.ObjectId
+    }
 });
 
 mongoose.model("category", category);
