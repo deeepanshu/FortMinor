@@ -16,18 +16,22 @@ router.get("/populate/1", (req, res) => {
         return res.status(200).send(categories);
     });
 });
-router.get("/populate/:id", (req, res) => {
+router.get("/populate/category/:id", (req, res) => {
     Category.findOne({_id: req.params.id}).populate({path: 'subcategory', model: 'subcategory'}).exec((err, categories) => {
         console.log(categories);
         return res.status(200).send(categories);
     });
 });
-router.get("/populate/2", (req, res) => {
-    SubCategory.find({}).populate({path: 'product', model: 'product'}).exec((err, prodcut) => {
-        return res.status(200).send(prodcut);
+router.get("/populate/subcategory/:id", (req, res) => {
+    SubCategory.findOne({_id: req.params.id}).populate({path: 'product', model: 'product'}).exec((err, subcategory) => {
+        return res.status(200).send(subcategory);
     });
 });
-
+router.get("/populate/product/:id", (req, res) => {
+    Product.findOne({_id: req.params.id},(err, product) =>{
+        return res.status(200).send(product);
+    });
+});
 /*
  Issue: cant populate second level of data.
  Heirarchy: Category -> SubCategory -> Product
@@ -72,7 +76,7 @@ router.get("get/products/:category_id/:sub_category_id", async (req, res) => {
 
 // Add Parent Category
 router.post("/add/category", (req, res) => {
-    let body = _.pick(req.body, ["name", "description"]);
+    let body = _.pick(req.body, ["name", "description", "image"]);
     let category = new Category(body);
     category.slug = slug(body.name.toLowerCase());
     console.log(category);
@@ -84,7 +88,7 @@ router.post("/add/category", (req, res) => {
 
 //Add Sub Category
 router.post("/add/subcategory", (req, res) => {
-    let body = _.pick(req.body, ["name", "description", "categoryID"]);
+    let body = _.pick(req.body, ["name", "description", "image", "categoryID"]);
     let subcategory = new SubCategory(body);
     subcategory.slug = slug(body.name.toLowerCase());
     subcategory.save((err, subcategory) => {
@@ -102,7 +106,7 @@ router.post("/add/subcategory", (req, res) => {
 
 //Add Product
 router.post("/add/product", (req, res) => {
-    let body = _.pick(req.body, ["name", "description", "categoryID", "subCategoryID"]);
+    let body = _.pick(req.body, ["name", "description", "image", "categoryID", "subCategoryID"]);
     let product = new Product(body);
     product.slug = slug(body.name.toLowerCase());
     product.save((err, product) => {

@@ -10,7 +10,8 @@ const category = new mongoose.Schema({
     subcategory: [mongoose.Schema.Types.ObjectId],
     createdBy: {
         type: mongoose.Schema.Types.ObjectId
-    }
+    },
+    image:String
 });
 
 mongoose.model("category", category);
