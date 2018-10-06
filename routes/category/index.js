@@ -12,6 +12,13 @@ let express = require('express'),
 // Populate Routes
 router.get("/populate/1", (req, res) => {
     Category.find({}).populate({path: 'subcategory', model: 'subcategory'}).exec((err, categories) => {
+        console.log(categories)
+        return res.status(200).send(categories);
+    });
+});
+router.get("/populate/:id", (req, res) => {
+    Category.findOne({_id: req.params.id}).populate({path: 'subcategory', model: 'subcategory'}).exec((err, categories) => {
+        console.log(categories);
         return res.status(200).send(categories);
     });
 });
