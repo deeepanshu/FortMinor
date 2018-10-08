@@ -12,13 +12,11 @@ let express = require('express'),
 // Populate Routes
 router.get("/populate/1", (req, res) => {
     Category.find({}).populate({path: 'subcategory', model: 'subcategory'}).exec((err, categories) => {
-        console.log(categories)
         return res.status(200).send(categories);
     });
 });
 router.get("/populate/category/:id", (req, res) => {
     Category.findOne({_id: req.params.id}).populate({path: 'subcategory', model: 'subcategory'}).exec((err, categories) => {
-        console.log(categories);
         return res.status(200).send(categories);
     });
 });
@@ -32,6 +30,7 @@ router.get("/populate/product/:id", (req, res) => {
         return res.status(200).send(product);
     });
 });
+
 /*
  Issue: cant populate second level of data.
  Heirarchy: Category -> SubCategory -> Product
@@ -51,26 +50,26 @@ router.get("/populate/3", (req, res) => {
 });
 
 
-//Get Parent Category
-router.get("/get/categories", async (req, res) => {
-    const categories = await Category.find({}).exec();
-    res.send(categories);
-});
-
-//Get Subcategory
-router.get("get/subcategories/:category_id", async (req, res) => {
-    const id = _.pick(req.params, ["category_id"]);
-    const category = await Category().findById(id).exec();
-    res.send(category);
-});
-
-//Get Product
-router.get("get/products/:category_id/:sub_category_id", async (req, res) => {
-    const category_id = _.pick(req.params, ["category_id"]);
-    const sub_category_id = _.pick(req.params, ["sub_category_id"]);
-    const category = await Category().findById(id).exec();
-    res.send(category);
-});
+// //Get Parent Category
+// router.get("/get/categories", async (req, res) => {
+//     const categories = await Category.find({}).exec();
+//     res.send(categories);
+// });
+//
+// //Get Subcategory
+// router.get("get/subcategories/:category_id", async (req, res) => {
+//     const id = _.pick(req.params, ["category_id"]);
+//     const category = await Category().findById(id).exec();
+//     res.send(category);
+// });
+//
+// //Get Product
+// router.get("get/products/:category_id/:sub_category_id", async (req, res) => {
+//     const category_id = _.pick(req.params, ["category_id"]);
+//     const sub_category_id = _.pick(req.params, ["sub_category_id"]);
+//     const category = await Category().findById(id).exec();
+//     res.send(category);
+// });
 
 
 

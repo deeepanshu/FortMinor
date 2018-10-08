@@ -10,6 +10,7 @@ require("./schemas/category");
 require("./schemas/user");
 require("./schemas/product");
 require("./schemas/subcategory");
+require("./schemas/verifications");
 
 mongoose.Promise = require("bluebird");
 mongoose.connect(keys.MONGO_URI);

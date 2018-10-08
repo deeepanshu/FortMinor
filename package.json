@@ -4,6 +4,7 @@
   "private": true,
   "main": "server.js",
   "dependencies": {
+    "@sendgrid/mail": "^6.3.1",
     "axios": "^0.18.0",
     "bcryptjs": "^2.4.3",
     "cookie-session": "^2.0.0-beta.3",
@@ -15,6 +16,8 @@
     "oauth20": "^2.0.2",
     "passport": "^0.4.0",
     "passport-google": "^0.3.0",
+    "passport-local": "^1.0.0",
+    "randomstring": "^1.1.5",
     "slug": "^0.9.1",
     "validator": "^10.8.0"
   },
