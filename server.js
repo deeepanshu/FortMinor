@@ -11,12 +11,14 @@ require("./schemas/user");
 require("./schemas/product");
 require("./schemas/subcategory");
 require("./schemas/verifications");
+require("./schemas/requests");
 
 mongoose.Promise = require("bluebird");
 mongoose.connect(keys.MONGO_URI);
 
 const auth_routes = require("./routes/auth");
 const category_routes = require("./routes/category/index");
+const request_routes = require("./routes/request/index");
 
 app.use(function(req, res, next) {
     res.setHeader("Access-Control-Allow-Origin", "*");
@@ -55,6 +57,7 @@ app.use(bodyParser.json({ limit: "50mb" }));
 
 app.use("/auth", auth_routes);
 app.use("/api", category_routes);
+app.use("/request", request_routes);
 
 //Fire up the server
 const port = process.env.PORT ||5000;
