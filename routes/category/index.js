@@ -7,8 +7,10 @@ let express = require("express"),
   User = mongoose.model("user"),
   _ = require("lodash"),
   slug = require("slug"),
-  db = mongoose.connection;
-
+  db = mongoose.connection,
+  Requests = mongoose.model("requests"),
+  keys = require("../../config/keys"),
+  sgMail = require("@sendgrid/mail");
 // Populate Routes
 router.get("/populate/1", (req, res) => {
   Category.find({})
@@ -113,7 +115,8 @@ router.post("/add/product", (req, res) => {
     "description",
     "image",
     "categoryID",
-    "subCategoryID"
+    "subCategoryID",
+    "attributes"
   ]);
   let product = new Product(body);
   product.slug = slug(body.name.toLowerCase());
@@ -157,7 +160,7 @@ router.get("/list/supplier/dealsIn", (req, res) => {
   if (!user.isSupplier) res.status(400).send({ err: 2 });
   if (user.isSupplier) {
     let dealsIn = user.supplier.dealIn;
-    if (dealsIn) {
+    if (dealsIn.length > 0) {
       console.log(dealsIn);
       dealsIn = dealsIn.map(d => mongoose.Types.ObjectId(d));
 
@@ -204,4 +207,52 @@ router.post("/edit/is/supplier/yes", (req, res) => {
   }
   res.status(200).send(user);
 });
+
+router.post("/add/request", (req, res) => {
+  let user = req.user;
+  let product = req.body.productId;
+  let requests = new Requests();
+  requests.requestedBy = user;
+  requests.productId = product;
+  console.log(requests);
+  sgMail.setApiKey(keys.SENDGRID_API);
+  const msg = {
+    from: "support@fortminor.com",
+    to: user.email,
+    subject: "Request Update",
+    html: `<h3>Welcome to FortMinor!</h3><b>Your request has been successfully posted. You will be contacted shortly by our team.</b>`
+  };
+
+  return requests.save((err, requests) => {
+    if (err) return res.status(400).send(err);
+  });
+
+  //status : 1; timeout
+  sgMail.send(msg, (err, info) => {
+    console.log(err, info);
+    if (err) return res.send(err);
+    //res.send(info);
+    // if (info[0].statusCode === 202) {
+    //   return res.send({ status: 2 });
+    // }
+  });
+  res.send(requests);
+});
+
+// View a user request
+router.post("/view/request/user/", (req, res) => {
+  let user = req.body.userId;
+  Requests.find({ requestedBy: user }, (err, requests) => {
+    return res.status(200).send(requests);
+  });
+});
+
+// View a product request
+router.post("/view/request/product/", (req, res) => {
+  let product = req.body.productId;
+  Requests.find({ productId: product }, (err, requests) => {
+    return res.status(200).send(requests);
+  });
+});
+
 module.exports = router;

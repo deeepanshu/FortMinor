@@ -11,6 +11,7 @@ const os = require("os");
 require("./schemas/category");
 require("./schemas/user");
 require("./schemas/product");
+require("./schemas/requests");
 require("./schemas/subcategory");
 require("./schemas/verifications");
 require("./services/passport_strategy");
