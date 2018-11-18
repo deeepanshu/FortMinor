@@ -34,3 +34,4 @@ let express = require('express'),
             return res.status(200).send(requests);
         });
     });
+modules.export = router;
