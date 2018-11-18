@@ -9,28 +9,33 @@ let express = require('express'),
 
     // Post a request
     router.post("/add/", (req, res) => {
-        let body = _.pick(req.body, ["productId","requestedBy"]);
-        let requests = new Requests(body);
+        let user = req.user;
+        let product = req.body.productId;
+        let requests = new Requests();
+        requests.requestedBy = user;
+        requests.productId = product;
         requests.status = 0;
 
         requests.save((err, requests) => {
             if (err) return res.status(400).send(err);
-            return res.status(200).send(category);
+            return res.status(200).send(requests);
         });
     });
 
-    // Post a request
+    // View a user request
     router.post("/view/user/", (req, res) => {
         let user = req.body.userId;
-        Requests.findOne({requestedBy: user},(err, requests) =>{
+        Requests.find({requestedBy: user},(err, requests) =>{
             return res.status(200).send(requests);
         });
     });
 
-    // Post a request
+    // View a product request
     router.post("/view/product/", (req, res) => {
         let product = req.body.productId;
-        Requests.findOne({productId: product},(err, requests) =>{
+        Requests.find({productId: product},(err, requests) =>{
             return res.status(200).send(requests);
         });
     });
+
+module.exports = router;
