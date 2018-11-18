@@ -47,12 +47,12 @@ const userSchema = new Schema({
         isCompany: {
             type: Boolean,
             default: true
-        }
+        },
+        dealIn:[]
     },
     password: {
         type: String,
-        require: true,
-        minlength: 6
+        require: true
     },
     tokens: [
         {
