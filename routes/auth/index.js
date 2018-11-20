@@ -11,7 +11,6 @@ const keys = require("../../config/keys"),
 const sgMail = require("@sendgrid/mail");
 
 router.get("/current_user", (req, res) => {
-  console.log(req.user);
   res.send(req.user);
 });
 
@@ -110,7 +109,7 @@ router.post("/add/verify", async (req, res) => {
   verify.time = new Date().getTime();
   verify.token = randomstring.generate();
   verify.save();
-  let url = `http://localhost:3000/register/verify/${verify.token}`;
+  let url = `${keys.HOSTNAME}/register/verify/${verify.token}`;
   sgMail.setApiKey(keys.SENDGRID_API);
   const msg = {
     from: "support@fortminor.com",

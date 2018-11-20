@@ -161,7 +161,6 @@ router.get("/list/supplier/dealsIn", (req, res) => {
   if (user.isSupplier) {
     let dealsIn = user.supplier.dealIn;
     if (dealsIn.length > 0) {
-      console.log(dealsIn);
       dealsIn = dealsIn.map(d => mongoose.Types.ObjectId(d));
 
       return SubCategory.find(
@@ -208,13 +207,21 @@ router.post("/edit/is/supplier/yes", (req, res) => {
   res.status(200).send(user);
 });
 
-router.post("/add/request", (req, res) => {
-  let user = req.user;
-  let product = req.body.productId;
+router.post("/add/request", async (req, res) => {
+  let productID = req.body.productId;
   let requests = new Requests();
+  const product = await Product.findById({ _id: productID }).exec();
+  var user = _.pick(req.user, [
+    "_id",
+    "email",
+    "contact",
+    "fullName",
+    "organisationName",
+    "addresses"
+  ]);
+  requests.product = product;
   requests.requestedBy = user;
-  requests.productId = product;
-  console.log(requests, user);
+  console.log(requests);
   sgMail.setApiKey(keys.SENDGRID_API);
   const msg = {
     from: "support@fortminor.com",
@@ -223,38 +230,65 @@ router.post("/add/request", (req, res) => {
     html: `<h3>Welcome to FortMinor!</h3><b>Your request has been successfully posted. You will be contacted shortly by our team.</b>`
   };
 
-  console.log(msg);
-
   requests.save((err, requests) => {
     if (err) return res.status(400).send(err);
   });
 
   //status : 1; timeout
   sgMail.send(msg, (err, info) => {
-    console.log(err, info);
     if (err) return res.send(err);
-    //res.send(info);
-    // if (info[0].statusCode === 202) {
-    //   return res.send({ status: 2 });
-    // }
   });
   res.send(requests);
 });
 
 // View a user request
-router.post("/view/request/user/", (req, res) => {
-  let user = req.body.userId;
-  Requests.find({ requestedBy: user }, (err, requests) => {
-    return res.status(200).send(requests);
-  });
+router.get("/view/request/user", (req, res) => {
+  if (req.user) {
+    return Requests.find(
+      { "requestedBy._id": req.user._id },
+      (err, requests) => {
+        return res.status(200).send(requests);
+      }
+    );
+  } else {
+    return res.status(400).send({});
+  }
+});
+
+router.get("/view/request/supplier", async (req, res) => {
+  if (req.user) {
+    let requestList, productList, requestIds, productIds;
+    const products = await Product.find({
+      createdBy: mongoose.Types.ObjectId(req.user._id)
+    }).exec();
+    productIds = products.map(product => mongoose.Types.ObjectId(product._id));
+
+    Requests.find(
+      {
+        "product._id": {
+          $in: productIds
+        }
+      },
+      (err, requests) => {
+        console.log(requests);
+        if (err) return res.status(400).send(err);
+        return res.status(200).send(requests);
+      }
+    );
+  }
 });
 
 // View a product request
-router.post("/view/request/product/", (req, res) => {
+router.get("/view/request/product/:id", (req, res) => {
   let product = req.body.productId;
-  Requests.find({ productId: product }, (err, requests) => {
-    return res.status(200).send(requests);
-  });
+  Requests.find(
+    { productId: product },
+    null,
+    { sort: "timeOfOrder" },
+    (err, requests) => {
+      return res.status(200).send(requests);
+    }
+  );
 });
 
 module.exports = router;
