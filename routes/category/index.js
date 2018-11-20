@@ -214,7 +214,7 @@ router.post("/add/request", (req, res) => {
   let requests = new Requests();
   requests.requestedBy = user;
   requests.productId = product;
-  console.log(requests);
+  console.log(requests, user);
   sgMail.setApiKey(keys.SENDGRID_API);
   const msg = {
     from: "support@fortminor.com",
@@ -223,7 +223,9 @@ router.post("/add/request", (req, res) => {
     html: `<h3>Welcome to FortMinor!</h3><b>Your request has been successfully posted. You will be contacted shortly by our team.</b>`
   };
 
-  return requests.save((err, requests) => {
+  console.log(msg);
+
+  requests.save((err, requests) => {
     if (err) return res.status(400).send(err);
   });
 
