@@ -270,7 +270,6 @@ router.get("/view/request/supplier", async (req, res) => {
         }
       },
       (err, requests) => {
-        console.log(requests);
         if (err) return res.status(400).send(err);
         return res.status(200).send(requests);
       }
@@ -291,4 +290,25 @@ router.get("/view/request/product/:id", (req, res) => {
   );
 });
 
+router.get("/switch/request/status/accept/:id", (req, res) => {
+  return Requests.findOne({ _id: req.params.id }, (err, request) => {
+    request.status = 1;
+    let newRequest = new Requests(request);
+    console.log(newRequest);
+    return newRequest.save((err, newRequest) => {
+      if (err) return res.send({ err });
+      return res.send(newRequest);
+    });
+  });
+});
+router.get("/switch/request/status/reject/:id", (req, res) => {
+  return Requests.findOne({ _id: req.params.id }, (err, request) => {
+    request.status = -1;
+    let newRequest = new Requests(request);
+    return newRequest.save((err, newRequest) => {
+      if (err) return res.send({ err });
+      return res.send(newRequest);
+    });
+  });
+});
 module.exports = router;
